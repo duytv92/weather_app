@@ -4,12 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weather_app.model.weather.ListItem
-import com.example.weather_app.model.weather.WeatherResponse
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class WeatherListViewModel(private val weatherRepository: WeatherRepository) : ViewModel() {
     var listWeather: MutableState<List<ListItem>> = mutableStateOf(emptyList())
@@ -20,6 +15,8 @@ class WeatherListViewModel(private val weatherRepository: WeatherRepository) : V
     private val NUMBER_FORECAST = "cnt"
     private val APP_ID = "appid"
     private val NOT_FOUND = "City not found"
+    private val APP_ID_VALUE = "60c6fbeb4b93ac653c492ba806fc346d"
+    private val NUMBER_FORECAST_VALUE = "7"
 
     fun fetchWeather(cityName: String = "hanoi") {
         listWeather.value = emptyList()
@@ -27,15 +24,16 @@ class WeatherListViewModel(private val weatherRepository: WeatherRepository) : V
         viewModelScope.launch {
             try {
                 isLoading.value = true
-                delay(1000)
                 val filter = HashMap<String, String>()
                 filter[CITY_NAME] = cityName
-                filter[NUMBER_FORECAST] = "7"
-                filter[APP_ID] = "60c6fbeb4b93ac653c492ba806fc346d"
-//                filter["units"] = "Temperature"
+                filter[NUMBER_FORECAST] = NUMBER_FORECAST_VALUE
+                filter[APP_ID] = APP_ID_VALUE
+                //filter["units"] = "Temperature"
                 val result = weatherRepository.getForeCast(filter)
+                listWeather.value = result.listItem
+                isLoading.value = false
 
-                result.enqueue(object :
+                /*result.enqueue(object :
                     Callback<WeatherResponse> {
                     override fun onResponse(
                         call: Call<WeatherResponse>,
@@ -56,10 +54,9 @@ class WeatherListViewModel(private val weatherRepository: WeatherRepository) : V
                     override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
                         // Handle failure
                     }
-                })
-                isLoading.value = false
+                })*/
             } catch (exception: Exception) {
-                exception.printStackTrace()
+                msg.value = NOT_FOUND
                 isLoading.value = false
             }
 
