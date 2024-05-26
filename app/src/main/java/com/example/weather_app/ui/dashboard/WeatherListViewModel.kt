@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weather_app.model.weather.ListItem
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class WeatherListViewModel(private val weatherRepository: WeatherRepository) : ViewModel() {
@@ -24,6 +25,7 @@ class WeatherListViewModel(private val weatherRepository: WeatherRepository) : V
         viewModelScope.launch {
             try {
                 isLoading.value = true
+                delay(1000)
                 val filter = HashMap<String, String>()
                 filter[CITY_NAME] = cityName
                 filter[NUMBER_FORECAST] = NUMBER_FORECAST_VALUE
